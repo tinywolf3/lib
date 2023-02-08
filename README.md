@@ -309,7 +309,10 @@ const ResCode = require('./lib/rescode.js');
 		console.log('성공');
 	}
 	else if (ResCode.app.isError(code)) {
-		console.log('오류', );
+		console.log('오류', ResCode.app.getDesc(code));
+	}
+	else {
+		console.log(ResCode.app.getDesc(code));
 	}
 
 	// 파일 읽기 실패로 종료
