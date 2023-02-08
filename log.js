@@ -65,7 +65,7 @@ function inspect(mode, code, func, obj) {
 	console.log(getTime(), 'INSP'.ansiCyan
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
-		+ (func != null ? '.' + func : '')
+		+ (func != null ? '.' + func : '') + '|'
 		+ ' "' + type + '"', Util.inspect(obj, true, null, true));
 }
 
@@ -78,7 +78,7 @@ function info(mode, code, func, ...args) {
 	console.log(getTime(), 'INFO'.ansiBlue
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
-		+ (func != null ? '.' + func : ''),
+		+ (func != null ? '.' + func : '') + '|',
 		...args);
 }
 
@@ -86,7 +86,7 @@ function debug(mode, code, func, ...args) {
 	console.log(getTime(), 'DEBG'.ansiBlueBack
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
-		+ (func != null ? '.' + func : ''),
+		+ (func != null ? '.' + func : '') + '|',
 		...args);
 }
 
@@ -96,7 +96,7 @@ function warn(mode, code, func, ...args) {
 	console.log(tt, 'WARN'.ansiRed
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
-		+ (func != null ? '.' + func : ''),
+		+ (func != null ? '.' + func : '') + '|',
 		...args);
 }
 
@@ -108,7 +108,7 @@ function assert(check, mode, code, func, ...args) {
 	console.log(tt, 'ASST'.ansiYellowBack
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
-		+ (func != null ? '.' + func : ''),
+		+ (func != null ? '.' + func : '') + '|',
 		...args);
 }
 
@@ -118,7 +118,7 @@ function error(mode, code, func, ...args) {
 	console.log(tt, 'ERRO'.ansiRedBack
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
-		+ (func != null ? '.' + func : ''),
+		+ (func != null ? '.' + func : '') + '|',
 		...args);
 }
 
@@ -129,8 +129,8 @@ function begin(label, mode, code, func, ...args) {
 	console.log(getTime(), 'TIME'.ansiUnderline
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
-		+ (func != null ? '.' + func : '')
-		+ ':' + 'begin'.ansiGreen
+		+ (func != null ? '.' + func : '') + '|',
+		'begin'.ansiGreen
 		+ '("' + label + '")=' + '0'.ansiYellow.ansiBright + 'ms',
 		...args);
 }
@@ -203,8 +203,8 @@ function elapse(label, mode, code, func, ...args) {
 		console.log(getTime(), 'TIME'.ansiUnderline
 			+ ':' + mode.ansiBlue.ansiBright
 			+ ':' + code.ansiYellow.ansiBright
-			+ (func != null ? '.' + func : '')
-			+ ':' + 'elapse'.ansiYellow
+			+ (func != null ? '.' + func : '') + '|',
+			'elapse'.ansiYellow
 			+ '(invalid label "' + label + '")=' + '?'.ansiRed.ansiBright + 'ms',
 			...args);
 		return;
@@ -213,8 +213,8 @@ function elapse(label, mode, code, func, ...args) {
 	console.log(getTime(), 'TIME'.ansiUnderline
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
-		+ (func != null ? '.' + func : '')
-		+ ':' + 'elapse'.ansiYellow
+		+ (func != null ? '.' + func : '') + '|',
+		'elapse'.ansiYellow
 		+ '("' + label + '")=' + ('' + diff).ansiYellow.ansiBright + 'ms' + '(' + fmt(diff).ansiYellow + ')',
 		...args);
 }
@@ -224,8 +224,8 @@ function end(label, mode, code, func, ...args) {
 		console.log(getTime(), 'TIME'.ansiUnderline
 			+ ':' + mode.ansiBlue.ansiBright
 			+ ':' + code.ansiYellow.ansiBright
-			+ (func != null ? '.' + func : '')
-			+ ':' + 'end'.ansiRed
+			+ (func != null ? '.' + func : '') + '|',
+			'end'.ansiRed
 			+ '(invalid label "' + label + '")=' + '?'.ansiRed.ansiBright + 'ms',
 			...args);
 		return;
@@ -235,8 +235,8 @@ function end(label, mode, code, func, ...args) {
 	console.log(getTime(), 'TIME'.ansiUnderline
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
-		+ (func != null ? '.' + func : '')
-		+ ':' + 'end'.ansiRed
+		+ (func != null ? '.' + func : '') + '|',
+		'end'.ansiRed
 		+ '("' + label + '")=' + ('' + diff).ansiYellow.ansiBright + 'ms' + '(' + fmt(diff).ansiYellow + ')',
 		...args);
 }
