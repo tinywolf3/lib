@@ -248,7 +248,10 @@ function br() {
 function hr(ch = '-') {
 	if (typeof ch !== 'string')
 		ch = '-';
-	console.log(ch.repeat((process.stdout.columns - 2) / ch.length));
+	let col = 10;
+	if (process.stdout?.columns && process.stdout.columns > 10)
+		col = process.stdout.columns;
+	console.log(ch.repeat((col - 2) / ch.length));
 }
 
 module.exports = {
