@@ -245,7 +245,7 @@ function br() {
 	console.log();
 }
 
-function hl(ch = '-') {
+function hr(ch = '-') {
 	if (typeof ch !== 'string')
 		ch = '-';
 	console.log(ch.repeat((process.stdout.columns - 2) / ch.length));
@@ -264,5 +264,5 @@ module.exports = {
 	elapse: elapse,
 	end: end,
 	br: br,
-	hl: hl,
+	hr: hr,
 };
