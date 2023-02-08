@@ -242,7 +242,7 @@ function end(label, mode, code, func, ...args) {
 }
 
 function br() {
-	console.log();
+	console.log('\t');
 }
 
 function hr(ch = '-') {
