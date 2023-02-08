@@ -24,7 +24,7 @@ function getTime() {
 	if (now.getUTCDate() != LastDay || now.getUTCHours() != LastHour) {
 		LastDay = now.getUTCDate();
 		LastHour = now.getUTCHours();
-		if (process.env.pm2_env) console.error(now.toISOString());
+		if (process.env.pm_id) console.error(now.toISOString());
 		console.log(now.toISOString().ansiInvert);
 	}
 	let time = '';
@@ -92,7 +92,7 @@ function debug(mode, code, func, ...args) {
 
 function warn(mode, code, func, ...args) {
 	const tt = getTime();
-	if (process.env.pm2_env) console.error(tt, 'WARN:' + mode + ':' + code + (func != null ? '.' + func : ''));
+	if (process.env.pm_id) console.error(tt, 'WARN:' + mode + ':' + code + (func != null ? '.' + func : ''));
 	console.log(tt, 'WARN'.ansiRed
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
@@ -104,7 +104,7 @@ function assert(check, mode, code, func, ...args) {
 	if (check == true)
 		return;
 	const tt = getTime();
-	if (process.env.pm2_env) console.error(tt, 'ASST:' + mode + ':' + code + (func != null ? '.' + func : ''));
+	if (process.env.pm_id) console.error(tt, 'ASST:' + mode + ':' + code + (func != null ? '.' + func : ''));
 	console.log(tt, 'ASST'.ansiYellowBack
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
@@ -114,7 +114,7 @@ function assert(check, mode, code, func, ...args) {
 
 function error(mode, code, func, ...args) {
 	const tt = getTime();
-	if (process.env.pm2_env) console.error(tt, 'ERRO:' + mode + ':' + code + (func != null ? '.' + func : ''));
+	if (process.env.pm_id) console.error(tt, 'ERRO:' + mode + ':' + code + (func != null ? '.' + func : ''));
 	console.log(tt, 'ERRO'.ansiRedBack
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
@@ -248,8 +248,8 @@ function br() {
 function hr(ch = '-') {
 	if (typeof ch !== 'string')
 		ch = '-';
-	let col = 10;
-	if (process.stdout?.columns && process.stdout.columns > 10)
+	let col = 40;
+	if (process.stdout?.columns && process.stdout.columns > 2)
 		col = process.stdout.columns;
 	console.log(ch.repeat((col - 2) / ch.length));
 }
