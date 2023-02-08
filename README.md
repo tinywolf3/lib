@@ -1,4 +1,4 @@
-# lib
+# node.js lib
 
 간단하게 자주 사용하는 node.js 라이브러리 모음
 
@@ -349,6 +349,52 @@ status = ResCode.http.NotImplemented.code;
 console.log(ResCode.http.isSuccess(status), status, ResCode.http.getDesc(status));
 status = 543;
 console.log(ResCode.http.isSuccess(status), status, ResCode.http.getDesc(status));
+```
+
+
+
+# 기존 저장소에 서브모듈로 추가
+
+## 추가하기
+
+사용하려는 프로젝트 디렉토리에서
+
+```sh
+git submodule add https://github.com/tinywolf3/node_lib.git ./lib
+```
+
+## 업데이트
+
+서브모듈의 디렉토리로 가서 pull 한 후에 본 프로젝트에서 add
+
+```sh
+cd ./lib/
+git pull
+cd ..
+git add ./lib
+git commit ...
+```
+
+
+
+# 서브모듈이 포함된 저장소 클론
+
+## 클론하기
+
+메인 프로젝트를 clone 한 후에 서브모듈도 초기 update 해 준다
+
+```sh
+git clone https://github.com/foo/bar.git
+cd bar/
+git submodule update --init --recursive
+```
+
+## 업데이트
+
+pull 할 때 서브모듈도 같이 가져온다
+
+```sh
+git pull --recurse-submodules
 ```
 
 
