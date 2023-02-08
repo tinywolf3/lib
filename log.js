@@ -24,6 +24,7 @@ function getTime() {
 	if (now.getUTCDate() != LastDay || now.getUTCHours() != LastHour) {
 		LastDay = now.getUTCDate();
 		LastHour = now.getUTCHours();
+		if (process.env.pm2_env) console.error(now.toISOString());
 		console.log(now.toISOString().ansiInvert);
 	}
 	let time = '';
@@ -90,7 +91,9 @@ function debug(mode, code, func, ...args) {
 }
 
 function warn(mode, code, func, ...args) {
-	console.log(getTime(), 'WARN'.ansiRed
+	const tt = getTime();
+	if (process.env.pm2_env) console.error(tt, 'WARN:' + mode + ':' + code + (func != null ? '.' + func : ''));
+	console.log(tt, 'WARN'.ansiRed
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
 		+ (func != null ? '.' + func : ''),
@@ -100,7 +103,9 @@ function warn(mode, code, func, ...args) {
 function assert(check, mode, code, func, ...args) {
 	if (check == true)
 		return;
-	console.log(getTime(), 'ASST'.ansiYellowBack
+	const tt = getTime();
+	if (process.env.pm2_env) console.error(tt, 'ASST:' + mode + ':' + code + (func != null ? '.' + func : ''));
+	console.log(tt, 'ASST'.ansiYellowBack
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
 		+ (func != null ? '.' + func : ''),
@@ -108,7 +113,9 @@ function assert(check, mode, code, func, ...args) {
 }
 
 function error(mode, code, func, ...args) {
-	console.log(getTime(), 'ERRO'.ansiRedBack
+	const tt = getTime();
+	if (process.env.pm2_env) console.error(tt, 'ERRO:' + mode + ':' + code + (func != null ? '.' + func : ''));
+	console.log(tt, 'ERRO'.ansiRedBack
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
 		+ (func != null ? '.' + func : ''),
