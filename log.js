@@ -24,8 +24,8 @@ function getTime() {
 	if (now.getUTCDate() != LastDay || now.getUTCHours() != LastHour) {
 		LastDay = now.getUTCDate();
 		LastHour = now.getUTCHours();
-		if (process.env.pm_id) console.error('pm2[' + process.env.pm_id + ']', now.toISOString());
-		console.log((process.env.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), now.toISOString().ansiInvert);
+		if (process?.env?.pm_id) console.error('pm2[' + process.env.pm_id + ']', now.toISOString());
+		console.log((process?.env?.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), now.toISOString().ansiInvert);
 	}
 	let time = '';
 	if (now.getUTCHours() < 10)
@@ -62,7 +62,7 @@ function inspect(mode, code, func, obj) {
 	let type = typeof obj;
 	if (Array.isArray(obj))
 		type = 'array';
-	console.log((process.env.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
+	console.log((process?.env?.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
 		getTime(), 'INSP'.ansiCyan
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
@@ -76,7 +76,7 @@ function log(...args) {
 }
 
 function info(mode, code, func, ...args) {
-	console.log((process.env.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
+	console.log((process?.env?.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
 		getTime(), 'INFO'.ansiBlue
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
@@ -85,7 +85,7 @@ function info(mode, code, func, ...args) {
 }
 
 function debug(mode, code, func, ...args) {
-	console.log((process.env.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
+	console.log((process?.env?.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
 		getTime(), 'DEBG'.ansiBlueBack
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
@@ -95,8 +95,8 @@ function debug(mode, code, func, ...args) {
 
 function warn(mode, code, func, ...args) {
 	const tt = getTime();
-	if (process.env.pm_id) console.error('pm2[' + process.env.pm_id + ']', tt, 'WARN:' + mode + ':' + code + (func != null ? '.' + func : ''));
-	console.log((process.env.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
+	if (process?.env?.pm_id) console.error('pm2[' + process.env.pm_id + ']', tt, 'WARN:' + mode + ':' + code + (func != null ? '.' + func : ''));
+	console.log((process?.env?.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
 		tt, 'WARN'.ansiRed
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
@@ -108,8 +108,8 @@ function assert(check, mode, code, func, ...args) {
 	if (check == true)
 		return;
 	const tt = getTime();
-	if (process.env.pm_id) console.error('pm2[' + process.env.pm_id + ']', tt, 'ASST:' + mode + ':' + code + (func != null ? '.' + func : ''));
-	console.log((process.env.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
+	if (process?.env?.pm_id) console.error('pm2[' + process.env.pm_id + ']', tt, 'ASST:' + mode + ':' + code + (func != null ? '.' + func : ''));
+	console.log((process?.env?.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
 		tt, 'ASST'.ansiYellowBack
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
@@ -119,8 +119,8 @@ function assert(check, mode, code, func, ...args) {
 
 function error(mode, code, func, ...args) {
 	const tt = getTime();
-	if (process.env.pm_id) console.error('pm2[' + process.env.pm_id + ']', tt, 'ERRO:' + mode + ':' + code + (func != null ? '.' + func : ''));
-	console.log((process.env.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
+	if (process?.env?.pm_id) console.error('pm2[' + process.env.pm_id + ']', tt, 'ERRO:' + mode + ':' + code + (func != null ? '.' + func : ''));
+	console.log((process?.env?.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
 		tt, 'ERRO'.ansiRedBack
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
@@ -132,7 +132,7 @@ const TimeLabels = {};
 
 function begin(label, mode, code, func, ...args) {
 	TimeLabels[label] = Date.now();
-	console.log((process.env.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
+	console.log((process?.env?.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
 		getTime(), 'TIME'.ansiUnderline
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
@@ -207,7 +207,7 @@ function fmt(ms) {
 
 function elapse(label, mode, code, func, ...args) {
 	if (!TimeLabels.hasOwnProperty(label)) {
-		console.log((process.env.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
+		console.log((process?.env?.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
 			getTime(), 'TIME'.ansiUnderline
 			+ ':' + mode.ansiBlue.ansiBright
 			+ ':' + code.ansiYellow.ansiBright
@@ -218,7 +218,7 @@ function elapse(label, mode, code, func, ...args) {
 		return;
 	}
 	const diff = Date.now() - TimeLabels[label];
-	console.log((process.env.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
+	console.log((process?.env?.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
 		getTime(), 'TIME'.ansiUnderline
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
@@ -230,7 +230,7 @@ function elapse(label, mode, code, func, ...args) {
 
 function end(label, mode, code, func, ...args) {
 	if (!TimeLabels.hasOwnProperty(label)) {
-		console.log((process.env.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
+		console.log((process?.env?.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
 			getTime(), 'TIME'.ansiUnderline
 			+ ':' + mode.ansiBlue.ansiBright
 			+ ':' + code.ansiYellow.ansiBright
@@ -242,7 +242,7 @@ function end(label, mode, code, func, ...args) {
 	}
 	const diff = Date.now() - TimeLabels[label];
 	delete TimeLabels[label];
-	console.log((process.env.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
+	console.log((process?.env?.pm_id ? 'pm2[' + process.env.pm_id + ']' : ''), 
 		getTime(), 'TIME'.ansiUnderline
 		+ ':' + mode.ansiBlue.ansiBright
 		+ ':' + code.ansiYellow.ansiBright
@@ -260,7 +260,7 @@ function hr(ch = '-') {
 	if (typeof ch !== 'string')
 		ch = '-';
 	let col = 40;
-	if (process.stdout?.columns && process.stdout.columns > 2)
+	if (process?.stdout?.columns && process.stdout.columns > 2)
 		col = process.stdout.columns;
 	console.log(ch.repeat((col - 2) / ch.length));
 }
