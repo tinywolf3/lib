@@ -80,17 +80,19 @@ console.log('rgb(147,112,219)'.ansiRGBback(147,112,219));
 //=============================================================================
 // 구현
 
-export function padLeft(src, len = 2, ch = '0') {
+function padLeft(src, len = 2, ch = '0') {
 	src = '' + src;
 	if (src.length >= len) return src;
 	src = ch.repeat(len) + src;
 	return src.substring(src.length - len);
 }
+module.exports.padLeft = padLeft;
 
-export function dateToSqlTime(date) {
+function dateToSqlTime(date) {
 	const d = new Date(date);
 	return `${d.getUTCFullYear()}-${padLeft(d.getUTCMonth() + 1)}-${padLeft(d.getUTCDate())} ${padLeft(d.getUTCHours())}:${padLeft(d.getUTCMinutes())}:${padLeft(d.getUTCSeconds())}.${padLeft(d.getUTCMilliseconds(), 3)}`;
 }
+module.exports.dateToSqlTime = dateToSqlTime;
 
 /**
  * 특정 문자열 전부 교체하기.
