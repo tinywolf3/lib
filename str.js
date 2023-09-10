@@ -80,6 +80,18 @@ console.log('rgb(147,112,219)'.ansiRGBback(147,112,219));
 //=============================================================================
 // 구현
 
+export function padLeft(src, len = 2, ch = '0') {
+	src = '' + src;
+	if (src.length >= len) return src;
+	src = ch.repeat(len) + src;
+	return src.substring(src.length - len);
+}
+
+export function dateToSqlTime(date) {
+	const d = new Date(date);
+	return `${d.getUTCFullYear()}-${padLeft(d.getUTCMonth() + 1)}-${padLeft(d.getUTCDate())} ${padLeft(d.getUTCHours())}:${padLeft(d.getUTCMinutes())}:${padLeft(d.getUTCSeconds())}.${padLeft(d.getUTCMilliseconds(), 3)}`;
+}
+
 /**
  * 특정 문자열 전부 교체하기.
  * 	사용> const ret = 'a boy has a book.'.replaceAll('a', 'the');
