@@ -34,7 +34,7 @@ const flow1 = new FlowRun(
 		function(flow) {
 			console.log('func 2');
 			const params = flow.getParams();	// 파라메터 확인
-			console.log(params.count);	// 카운트 출력
+			console.log('count:', params.count);	// 카운트 출력
 			if (params.count == 1) {
 				console.log('go prev');
 				flow.next(-1);	// 이전 함수로 복귀
@@ -78,9 +78,26 @@ const flow1 = new FlowRun(
 			await new Promise(resolve => setTimeout(resolve, 2000));
 			console.log('ok');
 		},
+		// 함수 배열 (배열 실행은 파라메터를 받을 수 없음)
+		[
+			async function() {
+				console.log('func 7-1');
+				await new Promise(resolve => setTimeout(resolve, 2000));
+				console.log('7-1 end');
+			},
+			async function() {
+				console.log('func 7-2');
+				await new Promise(resolve => setTimeout(resolve, 1000));
+				console.log('7-2 end');
+			},
+			function() {
+				console.log('func 7-3');
+				console.log('7-3 end');
+			},
+		],
 		// 실행 완료
 		function(flow) {
-			console.log('func 7');
+			console.log('func 8');
 			flow.result('done');	// 결과값이 있으면 실행 종료
 		},
 	],
@@ -206,15 +223,45 @@ module.exports = class FlowRun {
 			this.funcList_ = funcList;
 			for (const i in this.funcList_) {
 				const idx = parseInt(i);
-				if (typeof this.funcList_[idx] !== 'function') {
-					const label = '' + this.funcList_[idx];
-					if (this.labelList_.hasOwnProperty(label))
-						console.warn('FlowRun(' + this.id_ + '):WARN: label(' + label + ') is duplicated.');
-					this.labelList_[label] = idx;
-					if (this.debug_)
-						this.funcList_[idx] = Function('"use strict"; return (function(flow) { console.debug(\'FlowRun(' + this.id_ + '):DEBUG: label "' + label + '"\'); });')();
-					else
-						this.funcList_[idx] = function(flow){};
+				switch (typeof this.funcList_[idx]) {
+					case 'string':
+					case 'number':
+						// 문자나 숫자면 라벨로 추가
+					{
+						const label = '' + this.funcList_[idx];
+						if (this.labelList_.hasOwnProperty(label))
+							console.warn('FlowRun(' + this.id_ + '):WARN: label(' + label + ') is duplicated.');
+						this.labelList_[label] = idx;
+						if (this.debug_)
+							this.funcList_[idx] = Function('"use strict"; return (function(flow) { console.debug(\'FlowRun(' + this.id_ + '):DEBUG: label "' + label + '"\'); });')();
+						else
+							this.funcList_[idx] = function(flow){};
+					} break;
+
+					case 'function': {
+						// 정상
+					} break;
+
+					case 'object':
+						if ( Array.isArray(this.funcList_[idx]) ) {
+							// 배열이면 요소가 모두 함수인지 확인
+							for (const f of this.funcList_[idx]) {
+								if (typeof f !== 'function') {
+									const errmsg = 'FlowRun(' + this.id_ + '):ERROR: funcList[' + idx + '] is not an array of functions.';
+									if (this.debug_)
+										console.error(errmsg);
+									throw new Error(errmsg);
+								}
+							}
+							break;
+						}
+						// 배열이 아니면 브레이크 없이 error로 내려감
+
+					default:
+						const errmsg = 'FlowRun(' + this.id_ + '):ERROR: funcList[' + idx + '] is neither a function, a label, nor an array of functions.';
+						if (this.debug_)
+							console.error(errmsg);
+						throw new Error(errmsg);
 				}
 			}
 			if (this.debug_) {
@@ -298,7 +345,16 @@ module.exports = class FlowRun {
 			flowrun.pack_.result_ = null;
 			if (flowrun.debug_)
 				console.debug('FlowRun(' + flowrun.id_ + '):DEBUG: run ' + flowrun.pos_ + '/' + (flowrun.funcList_.length - 1));
-			await Promise.allSettled([ flowrun.funcList_[flowrun.pos_](flowrun.pack_) ]);
+			if ( Array.isArray(flowrun.funcList_[flowrun.pos_]) ) {
+				const funclist = [];
+				for (const func of flowrun.funcList_[flowrun.pos_]) {
+					funclist.push(func());
+				}
+				await Promise.allSettled(funclist);
+			}
+			else {
+				await Promise.allSettled([ flowrun.funcList_[flowrun.pos_](flowrun.pack_) ]);
+			}
 			if (flowrun.pack_.error_ != null) {
 				if (flowrun.debug_)
 					console.debug('FlowRun(' + flowrun.id_ + '):DEBUG: error!');
