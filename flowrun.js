@@ -11,6 +11,7 @@ const FlowRun = require('./lib/flowrun.js');
 // 파라메터 전달과 흐름 제어
 const flow1 = new FlowRun(
 	[
+		// 전달된 파라메터 확인
 		function(flow) {
 			console.log('func 0');
 			if (flow.getParams().hasOwnProperty('test'))
@@ -21,6 +22,7 @@ const flow1 = new FlowRun(
 			}
 			flow.params({ text:'flow', count:0 });	// 다음 파라메터 설정
 		},
+		// 파라메터 수정과 정해진 시간 대기
 		function(flow) {
 			console.log('func 1');
 			const params = flow.getParams();	// 파라메터 확인
@@ -28,6 +30,7 @@ const flow1 = new FlowRun(
 			params.count++;
 			flow.delay(500);	// ms동안 지연한 후 다음 함수 실행
 		},
+		// 파라메터 출력과 이전 함수의 반복
 		function(flow) {
 			console.log('func 2');
 			const params = flow.getParams();	// 파라메터 확인
@@ -42,15 +45,18 @@ const flow1 = new FlowRun(
 				flow.next(0);	// 카운트가 다 찰 때까지 현재 위치 반복 수행
 			}
 		},
+		// 다음 함수 건너뛰기
 		function(flow) {
 			console.log('func 3');
 			const params = flow.getParams();	// 파라메터 확인
 			params.msg = 'test';
 			flow.next(2);	// 다음 함수를 건너뛰고 진행
 		},
+		// 건너뛴 함수
 		function(flow) {
 			console.log('func 4');
 		},
+		// 흐름의 일시정지와 계속 진행
 		function(flow) {
 			console.log('func 5');
 			const params = flow.getParams();	// 파라메터 확인
@@ -62,23 +68,33 @@ const flow1 = new FlowRun(
 					flow.resume();	// io를 마치고 계속 진행
 					console.log('resuming.');
 				},
-				5000
+				2000
 			);
 		},
-		function(flow) {
+		// async/await로 대기
+		async function(flow) {
 			console.log('func 6');
+			console.log('waiting...');
+			await new Promise(resolve => setTimeout(resolve, 2000));
+			console.log('ok');
+		},
+		// 실행 완료
+		function(flow) {
+			console.log('func 7');
 			flow.result('done');	// 결과값이 있으면 실행 종료
 		},
 	],
+	// 에러 처리
 	function(err, params) {
 		console.error('error! ' + err);
 	},
+	// 완료 후 정리
 	function(ret, params) {
 		console.info('finish. ' + ret);
 	},
 	true, 'test'	// 디버깅 출력
 );
-//flow1.run();
+// flow1.run();
 flow1.run({ test:'FlowRun' });
 
 
@@ -248,7 +264,7 @@ module.exports = class FlowRun {
 	 * 실행.
 	 * @param {object} initParams - 초기 파라메터.
 	 */
-	run(initParams = null) {
+	async run(initParams = null) {
 		if (initParams)
 			this.pack_.params_ = initParams;
 
@@ -256,22 +272,22 @@ module.exports = class FlowRun {
 			if (this.pack_.error_ != null) {
 				if (this.debug_)
 					console.debug('FlowRun(' + this.id_ + '):DEBUG: error!');
-				this.errorCallback_(this.pack_.error_, this.pack_.getParams());
+				await Promise.allSettled([ this.errorCallback_(this.pack_.error_, this.pack_.getParams()) ]);
 				return;
 			}
 			if (this.pack_.result_ != null) {
 				if (this.debug_)
 					console.debug('FlowRun(' + this.id_ + '):DEBUG: finished.');
-				this.finishCallback_(this.pack_.result_, this.pack_.getParams());
+				await Promise.allSettled([ this.finishCallback_(this.pack_.result_, this.pack_.getParams()) ]);
 				return;
 			}
 		}
 
-		setTimeout( flowrun => {
+		setTimeout( async (flowrun) => {
 			if (flowrun.pos_ < 0 || flowrun.pos_ >= flowrun.funcList_.length) {
 				if (this.debug_)
 					console.debug('FlowRun(' + this.id_ + '):DEBUG: Out of index.');
-				flowrun.errorCallback_('FlowRun(' + flowrun.id_ + '): Out of index. ' + flowrun.pos_ + '/' + (flowrun.funcList_.length - 1));
+				await Promise.allSettled([ flowrun.errorCallback_('FlowRun(' + flowrun.id_ + '): Out of index. ' + flowrun.pos_ + '/' + (flowrun.funcList_.length - 1)) ]);
 				return;
 			}
 
@@ -282,17 +298,17 @@ module.exports = class FlowRun {
 			flowrun.pack_.result_ = null;
 			if (flowrun.debug_)
 				console.debug('FlowRun(' + flowrun.id_ + '):DEBUG: run ' + flowrun.pos_ + '/' + (flowrun.funcList_.length - 1));
-			flowrun.funcList_[flowrun.pos_](flowrun.pack_);
+			await Promise.allSettled([ flowrun.funcList_[flowrun.pos_](flowrun.pack_) ]);
 			if (flowrun.pack_.error_ != null) {
 				if (flowrun.debug_)
 					console.debug('FlowRun(' + flowrun.id_ + '):DEBUG: error!');
-				flowrun.errorCallback_(flowrun.pack_.error_, this.pack_.getParams());
+				await Promise.allSettled([ flowrun.errorCallback_(flowrun.pack_.error_, this.pack_.getParams()) ]);
 				return;
 			}
 			if (flowrun.pack_.result_ != null) {
 				if (flowrun.debug_)
 					console.debug('FlowRun(' + flowrun.id_ + '):DEBUG: finished.');
-				flowrun.finishCallback_(flowrun.pack_.result_, this.pack_.getParams());
+				await Promise.allSettled([ flowrun.finishCallback_(flowrun.pack_.result_, this.pack_.getParams()) ]);
 				return;
 			}
 			if (flowrun.pack_.block_ == false) {
