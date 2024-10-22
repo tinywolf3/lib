@@ -368,7 +368,8 @@ module.exports = class FlowRun {
 					if (results[i].status !== 'fulfilled') {
 						if (flowrun.debug_)
 							console.debug('FlowRun(' + flowrun.id_ + '):DEBUG: [' + i + '] failed ' + flowrun.pos_ + '/' + (flowrun.funcList_.length - 1));
-						console.error('error in executed functions at ' + i + ' of ' + flowrun.pos_ + '/' + (flowrun.funcList_.length - 1));
+						flowrun.pack_.error_ = 'FlowRun: error in executed functions at ' + i + ' of ' + flowrun.pos_ + '/' + (flowrun.funcList_.length - 1);
+						console.error(flowrun.pack_.error_);
 						console.dir(results[i].reason, { depth: null });
 					}
 				}
