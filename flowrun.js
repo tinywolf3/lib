@@ -331,6 +331,7 @@ module.exports = class FlowRun {
 		}
 
 		setTimeout( async (flowrun) => {
+			// 범위 확인
 			if (flowrun.pos_ < 0 || flowrun.pos_ >= flowrun.funcList_.length) {
 				if (this.debug_)
 					console.debug('FlowRun(' + this.id_ + '):DEBUG: Out of index.');
@@ -338,6 +339,7 @@ module.exports = class FlowRun {
 				return;
 			}
 
+			// 진행 설정
 			flowrun.pack_.step_ = 1;
 			flowrun.pack_.block_ = false;
 			flowrun.pack_.delay_ = 0;
@@ -345,22 +347,42 @@ module.exports = class FlowRun {
 			flowrun.pack_.result_ = null;
 			if (flowrun.debug_)
 				console.debug('FlowRun(' + flowrun.id_ + '):DEBUG: run ' + flowrun.pos_ + '/' + (flowrun.funcList_.length - 1));
+
+			// 실행
+			let results = [];
 			if ( Array.isArray(flowrun.funcList_[flowrun.pos_]) ) {
 				const funclist = [];
 				for (const func of flowrun.funcList_[flowrun.pos_]) {
 					funclist.push(func());
 				}
-				await Promise.allSettled(funclist);
+				results = await Promise.allSettled(funclist);
 			}
 			else {
-				await Promise.allSettled([ flowrun.funcList_[flowrun.pos_](flowrun.pack_) ]);
+				results = await Promise.allSettled([ flowrun.funcList_[flowrun.pos_](flowrun.pack_) ]);
 			}
+
+			// 결과 확인
+			if (Array.isArray(results)) {
+				for (let i = 0; i < results.length; ++i) {
+					// 실행에 성공하지 못했다면
+					if (results[i].status !== 'fulfilled') {
+						if (flowrun.debug_)
+							console.debug('FlowRun(' + flowrun.id_ + '):DEBUG: [' + i + '] failed ' + flowrun.pos_ + '/' + (flowrun.funcList_.length - 1));
+						console.error('error in executed functions at ' + i + ' of ' + flowrun.pos_ + '/' + (flowrun.funcList_.length - 1));
+						console.dir(results[i].reason, { depth: null });
+					}
+				}
+			}
+
+			// 에러 확인
 			if (flowrun.pack_.error_ != null) {
 				if (flowrun.debug_)
 					console.debug('FlowRun(' + flowrun.id_ + '):DEBUG: error!');
 				await Promise.allSettled([ flowrun.errorCallback_(flowrun.pack_.error_, this.pack_.getParams()) ]);
 				return;
 			}
+
+			// 결과 확인
 			if (flowrun.pack_.result_ != null) {
 				if (flowrun.debug_)
 					console.debug('FlowRun(' + flowrun.id_ + '):DEBUG: finished.');
